@@ -178,7 +178,7 @@ public class SinaWeiboAutoLogin {
     }
 
     public static void main(String[] a) throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException {
-        Mongo m = new Mongo("127.0.0.1");
+        Mongo m = new Mongo("192.168.86.216");
         DB db = m.getDB("people");
         while (true) {
             db.requestStart();
