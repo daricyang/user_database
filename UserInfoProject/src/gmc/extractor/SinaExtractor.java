@@ -15,6 +15,9 @@ import java.util.List;
  */
 public class SinaExtractor {
 
+    public static final int FOLLOW = 1;
+    public static final int FANS = 2;
+
     /**
      * 提取新浪微博用户信息
      *
@@ -58,5 +61,29 @@ public class SinaExtractor {
             friendList.add(s);
         }
         return friendList;
+    }
+
+    public int extractorPage(String source, int type) {
+        int page = -1;
+        String res = "";
+        String regex = "";
+        if (type == SinaExtractor.FOLLOW) {
+            regex = "<strong node-type=\\\\\"follow\\\\\">.*?<\\\\/strong>";
+        } else {
+            regex = "<strong node-type\\\\\"fans\\\\\">.*?<\\\\/strong>";
+        }
+        res = ReglarExpression.Reglar(regex, source);
+        res = res.replaceAll("</*?>", "");
+        try {
+            page = Integer.parseInt(res);
+            page = page / 20;
+            double temp = page / 20.0;
+            if (temp > page) {
+                page++;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return page;
     }
 }

@@ -58,6 +58,7 @@ public class SinaMultiThread extends Thread {
 
     public void run() {
         try {
+            
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -73,6 +74,10 @@ public class SinaMultiThread extends Thread {
                 }
             }
         }
+    }
+    
+    private void save(){
+        
     }
 
     public void setId(String id) {
