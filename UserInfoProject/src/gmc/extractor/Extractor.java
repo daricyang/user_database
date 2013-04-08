@@ -41,7 +41,7 @@ public class Extractor extends Thread {
             DBCollection proColl = proDb.getCollection(Config.processCollectionName);
             DBObject timeObj = proColl.findOne();
             if (timeObj != null && timeObj.containsField("time")) {
-                lastProcessTime = (Double) timeObj.get("time");
+                lastProcessTime = Double.parseDouble(timeObj.get("time").toString());
             }
             DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", lastProcessTime));
             DBCursor cur = coll.find(queryObj);
