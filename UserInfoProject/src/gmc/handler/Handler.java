@@ -26,8 +26,8 @@ public class Handler {
             InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException,
             InterruptedException{
         SinaWeiboAutoLogin swal=new SinaWeiboAutoLogin();
-        swal.pushCookie();
+        swal.start();
         Extractor e=new Extractor();
-        e.extractor();
+        e.start();
     }
 }

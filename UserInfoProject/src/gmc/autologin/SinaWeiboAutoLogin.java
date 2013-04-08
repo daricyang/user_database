@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -51,7 +53,7 @@ import org.json.JSONObject;
  *
  * @author Pok
  */
-public class SinaWeiboAutoLogin {
+public class SinaWeiboAutoLogin extends Thread{
 
     private String cookie;
     private String rsakv;
@@ -208,4 +210,32 @@ public class SinaWeiboAutoLogin {
             Thread.sleep(1000 * 60 * 60 * 12);
         }
     }
+
+    @Override
+    public void run() {
+        super.run();
+        try {
+            pushCookie();
+        } catch (IOException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalBlockSizeException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }  catch (BadPaddingException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeyException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchPaddingException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (InterruptedException ex) {
+            Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
 }

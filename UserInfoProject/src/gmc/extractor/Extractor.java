@@ -14,6 +14,8 @@ import gmc.config.Config;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.crypto.Data;
 import redis.clients.jedis.Jedis;
 import sun.net.www.content.image.gif;
@@ -22,7 +24,7 @@ import sun.net.www.content.image.gif;
  *
  * @author Pok
  */
-public class Extractor {
+public class Extractor extends Thread{
 
     public void extractor() throws UnknownHostException, InterruptedException {
         int c = 0;
@@ -75,6 +77,20 @@ public class Extractor {
 
     }
 
+    @Override
+    public void run() {
+        super.run();
+        try {
+            extractor();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    
+    
     public static void main(String[] a) throws UnknownHostException, InterruptedException {
         Extractor e = new Extractor();
         e.extractor();
