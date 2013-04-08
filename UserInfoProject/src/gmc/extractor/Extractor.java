@@ -13,6 +13,7 @@ import com.mongodb.Mongo;
 import gmc.config.Config;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,14 +25,15 @@ import sun.net.www.content.image.gif;
  *
  * @author Pok
  */
-public class Extractor extends Thread{
+public class Extractor extends Thread {
 
     public void extractor() throws UnknownHostException, InterruptedException {
         int c = 0;
         Config.init();
+        DecimalFormat df = new DecimalFormat("#");
         while (true) {
-            System.out.println("--\tRound:"+(++c)+"\t--");
-            String lastProcessTime = "0";
+            System.out.println("--\tRound:" + (++c) + "\t--");
+            double lastProcessTime = 0;
             Mongo mongo = new Mongo(Config.sourceHost);
             Mongo proMongo = new Mongo(Config.processHost);
             DB db = mongo.getDB(Config.sourceMongoDBName);
@@ -40,15 +42,18 @@ public class Extractor extends Thread{
             DBCollection proColl = proDb.getCollection(Config.processCollectionName);
             DBObject timeObj = proColl.findOne();
             if (timeObj != null && timeObj.containsField("time")) {
-                lastProcessTime = new BigDecimal(timeObj.get("time").toString()).toString();
+                lastProcessTime = (Double) timeObj.get("time");
             }
-            DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", Long.parseLong(lastProcessTime)));
+            DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", lastProcessTime));
             DBCursor cur = coll.find(queryObj);
             int min = new Date().getMinutes() - 1;
             while (cur.hasNext()) {
                 if (new Date().getMinutes() != min) {
                     DBObject obj = cur.next();
-                    lastProcessTime = new BigDecimal(obj.get("time").toString()).toString();
+                    double curTime = (Double) obj.get("time");
+                    if (lastProcessTime < curTime) {
+                        lastProcessTime = curTime;
+                    }
                     String url = obj.get("url").toString();
                     if (url.indexOf("info") != -1) {
                         url = url.substring(url.indexOf("com/") + 4, url.indexOf("/info"));
@@ -72,7 +77,7 @@ public class Extractor extends Thread{
             cur.close();
             mongo.close();
             proMongo.close();
-            Thread.sleep(1000*60*60*4);
+//            Thread.sleep(1000 * 60 * 60 * 4);
         }
 
     }
@@ -89,8 +94,6 @@ public class Extractor extends Thread{
         }
     }
 
-    
-    
     public static void main(String[] a) throws UnknownHostException, InterruptedException {
         Extractor e = new Extractor();
         e.extractor();
