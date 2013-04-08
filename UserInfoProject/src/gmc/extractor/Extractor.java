@@ -30,7 +30,6 @@ public class Extractor extends Thread {
     public void extractor() throws UnknownHostException, InterruptedException {
         int c = 0;
         Config.init();
-        DecimalFormat df = new DecimalFormat("#");
         while (true) {
             System.out.println("--\tRound:" + (++c) + "\t--");
             double lastProcessTime = 0;
@@ -46,9 +45,7 @@ public class Extractor extends Thread {
             }
             DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", lastProcessTime));
             DBCursor cur = coll.find(queryObj);
-            int min = new Date().getMinutes() - 1;
             while (cur.hasNext()) {
-                if (new Date().getMinutes() != min) {
                     DBObject obj = cur.next();
                     double curTime = (Double) obj.get("time");
                     if (lastProcessTime < curTime) {
@@ -69,15 +66,13 @@ public class Extractor extends Thread {
                     } else {
                         continue;
                     }
-                } else {
-                    break;
-                }
+                
             }
             proColl.insert(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
             cur.close();
             mongo.close();
             proMongo.close();
-//            Thread.sleep(1000 * 60 * 60 * 4);
+            Thread.sleep(1000 * 60 * 10);
         }
 
     }
