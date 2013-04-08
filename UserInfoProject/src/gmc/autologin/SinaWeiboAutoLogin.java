@@ -11,6 +11,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.WriteResult;
+import gmc.config.Config;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -177,21 +178,20 @@ public class SinaWeiboAutoLogin {
         return cookie;
     }
 
-    public static void main(String[] a) throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException {
-        Mongo m = new Mongo("192.168.86.216");
-        DB db = m.getDB("people");
+    public void pushCookie() throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException {
+        Mongo m = new Mongo(Config.cookieHost);
+        DB db = m.getDB(Config.cookieDBName);
         while (true) {
             db.requestStart();
-            DBCollection coll = db.getCollection("c_login_cookie");
+            DBCollection coll = db.getCollection(Config.cookieCollectionName);
             DBObject queryObj = new BasicDBObject("status", "available");
             DBObject updateObj = new BasicDBObject("$set", new BasicDBObject("status", "disable"));
             coll.update(queryObj, updateObj, false, true);
-            DBCollection uidColl = db.getCollection("c_login_id");
+            DBCollection uidColl = db.getCollection(Config.cookie_idCollectionName);
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             while (cur.hasNext()) {
                 DBObject obj = cur.next();
-                SinaWeiboAutoLogin login = new SinaWeiboAutoLogin();
-                String cookie = login.getLoginCookie(obj.get("uid").toString(), obj.get("pwd").toString());
+                String cookie = getLoginCookie(obj.get("uid").toString(), obj.get("pwd").toString());
                 if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
                     Date date = new Date();
                     DBObject inObj = new BasicDBObject();

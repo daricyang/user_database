@@ -11,19 +11,12 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author Pok
+ * @author SNA3
  */
 public class ReglarExpression {
 
-    /**
-     * 正则匹配
-     *
-     * @param regex 正则表达式
-     * @param source 待匹配的文本
-     * @return content 返回匹配结果——字符串
-     */
     public static String Reglar(String regex, String source) {
-        StringBuilder sb = new StringBuilder();
+        String content = "";
         final List<String> list = new ArrayList<String>();
         final Pattern pa = Pattern.compile(regex);
         final Matcher ma = pa.matcher(source);
@@ -31,20 +24,15 @@ public class ReglarExpression {
             list.add(ma.group());
         }
         for (int i = 0; i < list.size(); i++) {
-            sb.append(list.get(i));
+            content = content + list.get(i);
         }
-        return sb.toString();
+        return content;
     }
 
-    /**
-     * 正则匹配
-     *
-     * @param regex
-     * @param source
-     * @return resList 返回结果列表
-     */
-    public static List<String> ReglarArray(String regex, String source) {
-        final List<String> list = new ArrayList<String>();
+    
+
+    public static ArrayList<String> ReglarArray(String regex, String source) {
+        final ArrayList<String> list = new ArrayList<String>();
         final Pattern pa = Pattern.compile(regex);
         final Matcher ma = pa.matcher(source);
         while (ma.find()) {
