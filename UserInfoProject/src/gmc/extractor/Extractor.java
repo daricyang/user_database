@@ -45,7 +45,6 @@ public class Extractor extends Thread {
                 double curTime = (Double) obj.get("time");
                 if (lastProcessTime < curTime) {
                     lastProcessTime = curTime;
-                    System.out.println("process time:" + lastProcessTime);
                     proColl.save(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
                 }
                 String url = obj.get("url").toString();
