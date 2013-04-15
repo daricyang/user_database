@@ -38,10 +38,10 @@ public class Config {
     public static String sourceHost = server;
     public static String sourceMongoDBName = "pagebase";
     public static String sourceMongoCollectionName = "weibo";
-    public static String disHost = localhost;
+    public static String disHost = server;
     public static String disMongoDBName = "people";
     public static String disMongoCollectionName = "c_weibo_userinfo";
-    public static String processHost = localhost;
+    public static String processHost = server;
     public static String processDBName = "people";
     public static String processCollectionName = "c_weibo_process";
     public static String redisHost = server;
