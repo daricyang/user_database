@@ -32,7 +32,7 @@ public class Extractor extends Thread {
 
     public void extractor() throws UnknownHostException, InterruptedException {
         int c = 0;
-         Config.init();
+        Config.init();
         while (true) {
             double lastProcessTime = 0;
             DB db = Mongo.connect(new DBAddress("192.168.86.216", "pagebase"));
@@ -53,6 +53,7 @@ public class Extractor extends Thread {
                 if (lastProcessTime < curTime) {
                     lastProcessTime = curTime;
                     System.out.println("process time:" + lastProcessTime);
+                    proColl.save(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
                 }
                 String url = obj.get("url").toString();
                 if (url.indexOf("info") != -1) {
@@ -71,7 +72,6 @@ public class Extractor extends Thread {
                 }
 
             }
-            proColl.save(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
             cur.close();
             Thread.sleep(1000 * 60 * 10);
         }
