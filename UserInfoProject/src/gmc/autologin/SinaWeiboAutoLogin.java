@@ -203,6 +203,7 @@ public class SinaWeiboAutoLogin extends Thread {
             }
             cur.close();
             db.requestDone();
+            db.getMongo().close();
             Thread.sleep(1000 * 60 * 60 * 12);
         }
     }

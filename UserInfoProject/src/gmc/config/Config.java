@@ -30,6 +30,7 @@ public class Config {
             coll.save(obj);
             System.out.println(coll.count());
         }
+            db.getMongo().close();
         System.out.println("--\tinitial process done!\t--");
     }
     

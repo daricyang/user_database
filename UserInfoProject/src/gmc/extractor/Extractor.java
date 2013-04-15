@@ -65,6 +65,8 @@ public class Extractor extends Thread {
 
             }
             cur.close();
+            db.getMongo().close();
+            proDb.getMongo().close();
             Thread.sleep(1000 * 60 * 10);
         }
 

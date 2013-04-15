@@ -59,15 +59,15 @@ public class TencentAutoLogin extends Thread{
     }
 
     private List<String> getParam(HttpClient client, String uid) throws IOException {
-        String url = "http://check.ptlogin2.qq.com/check?"
-                + "regmaster="
-                + "&uin=" + uid + ""
+        String url = "http://check.ptlogin2.qq.com/check"
+                + "?regmaster="
+                + "&uin="+uid
                 + "&appid=46000101"
-                + "&js_ver=10025"
+                + "&js_ver=10028"
                 + "&js_type=1"
-                + "&login_sig=hqOyyPiFH3ZiVroEg95mcbqyJk7QrTC97k7NQSLcBtxZlEFlWtfRKzTxUgNMhuFv"
-                + "&u1=http%3A%2F%2Ft.qq.com%2F"
-                + "&r=0.8728721777442843";
+                + "&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1"
+                + "&u1=http%3A%2F%2Ft.qq.com"
+                + "&r=0.46759508829563856";
         HttpGet get = new HttpGet(url);
         HttpResponse response = client.execute(get);
         HttpEntity entity = response.getEntity();
@@ -83,12 +83,12 @@ public class TencentAutoLogin extends Thread{
 
     private String getCookie(DefaultHttpClient client, String uid, String sp, String captcha) throws IOException {
         String cookie = "";
-        String url = "http://ptlogin2.qq.com/login?"
-                + "u=" + uid + ""
-                + "&p=" + sp + ""
-                + "&verifycode=" + captcha + ""
+        String url =" http://ptlogin2.qq.com/login"
+                + "?u="+uid
+                + "&p="+sp
+                + "&verifycode="+captcha
                 + "&aid=46000101"
-                + "&u1=http%3A%2F%2Ft.qq.com%2F"
+                + "&u1=http%3A%2F%2Ft.qq.com"
                 + "&h=1"
                 + "&ptredirect=1"
                 + "&ptlang=2052"
@@ -98,13 +98,13 @@ public class TencentAutoLogin extends Thread{
                 + "&low_login_hour=720"
                 + "&regmaster="
                 + "&fp=loginerroralert"
-                + "&action=3-6-1365262771089"
+                + "&action=1-4-1366001797391"
                 + "&mibao_css="
                 + "&t=1"
                 + "&g=1"
-                + "&js_ver=10025"
+                + "&js_ver=10028"
                 + "&js_type=1"
-                + "&login_sig=hqOyyPiFH3ZiVroEg95mcbqyJk7QrTC97k7NQSLcBtxZlEFlWtfRKzTxUgNMhuFv";
+                + "&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1";
         HttpGet get = new HttpGet(url);
         HttpResponse response = client.execute(get);
         HttpEntity entity = response.getEntity();
@@ -193,6 +193,7 @@ public class TencentAutoLogin extends Thread{
             }
             cur.close();
             db.requestDone();
+            db.getMongo().close();
             Thread.sleep(1000 * 60 * 60 * 12);
         }
     }

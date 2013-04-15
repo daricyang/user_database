@@ -108,13 +108,15 @@ public class MultiExtractor extends Thread {
             }
             coll.insert(obj);
             info.clear();
+            db.getMongo().close();
         }
         if (!error.isEmpty() || error != null || !error.equals("")) {
-            DB db = Mongo.connect(new DBAddress("192.168.86.216", "peopel"));
+            DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
             DBCollection coll = db.getCollection("c_weibo_error");
             DBObject obj = new BasicDBObject("error", error).append("uid", id);
             coll.insert(obj);
             error = "";
+            db.getMongo().close();
         }
     }
 }
