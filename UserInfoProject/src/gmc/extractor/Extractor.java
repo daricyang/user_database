@@ -11,18 +11,11 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
-import com.mongodb.MongoOptions;
 import gmc.config.Config;
-import java.math.BigDecimal;
 import java.net.UnknownHostException;
-import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.crypto.Data;
-import org.omg.CORBA.TIMEOUT;
-import redis.clients.jedis.Jedis;
-import sun.net.www.content.image.gif;
 
 /**
  *

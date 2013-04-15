@@ -10,7 +10,6 @@ import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
-import com.mongodb.MongoOptions;
 import java.net.UnknownHostException;
 import java.util.Date;
 
