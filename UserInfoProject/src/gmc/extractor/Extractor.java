@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.crypto.Data;
+import org.omg.CORBA.TIMEOUT;
 import redis.clients.jedis.Jedis;
 import sun.net.www.content.image.gif;
 
@@ -29,46 +30,51 @@ public class Extractor extends Thread {
 
     public void extractor() throws UnknownHostException, InterruptedException {
         int c = 0;
-        Config.init();
+        // Config.init();
         while (true) {
-            System.out.println("--\tRound:" + (++c) + "\t--");
             double lastProcessTime = 0;
             Mongo mongo = new Mongo(Config.sourceHost);
-            Mongo proMongo = new Mongo(Config.processHost);
+            Mongo proMongo = mongo;
+            if (!Config.sourceHost.equals(Config.processHost)) {
+                proMongo = new Mongo(Config.processHost);
+            }
             DB db = mongo.getDB(Config.sourceMongoDBName);
-            DB proDb = mongo.getDB(Config.processDBName);
+            DB proDb = proMongo.getDB(Config.processDBName);
             DBCollection coll = db.getCollection(Config.sourceMongoCollectionName);
             DBCollection proColl = proDb.getCollection(Config.processCollectionName);
             DBObject timeObj = proColl.findOne();
+            //System.out.println(timeObj != null && timeObj.containsField("time"));
             if (timeObj != null && timeObj.containsField("time")) {
                 lastProcessTime = Double.parseDouble(timeObj.get("time").toString());
             }
+            System.out.println("--\tRound:" + (++c) + "\tLast Process Time:" + lastProcessTime + "\t--");
             DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", lastProcessTime));
             DBCursor cur = coll.find(queryObj);
             while (cur.hasNext()) {
-                    DBObject obj = cur.next();
-                    double curTime = (Double) obj.get("time");
-                    if (lastProcessTime < curTime) {
-                        lastProcessTime = curTime;
-                    }
-                    String url = obj.get("url").toString();
-                    if (url.indexOf("info") != -1) {
-                        url = url.substring(url.indexOf("com/") + 4, url.indexOf("/info"));
-                        synchronized (MultiExtractor.class) {
-                            int tcount = MultiExtractor.getThreadCount();
-                            while (tcount > 20) {
-                                MultiExtractor.class.wait();
-                                tcount = MultiExtractor.getThreadCount();
-                            }
-                            MultiExtractor t = new MultiExtractor(url, obj.get("html").toString());
-                            t.start();
+                DBObject obj = cur.next();
+                double curTime = (Double) obj.get("time");
+                if (lastProcessTime < curTime) {
+                    lastProcessTime = curTime;
+                    System.out.println("process time:" + lastProcessTime);
+                }
+                String url = obj.get("url").toString();
+                if (url.indexOf("info") != -1) {
+                    url = url.substring(url.indexOf("com/") + 4, url.indexOf("/info"));
+                    synchronized (MultiExtractor.class) {
+                        int tcount = MultiExtractor.getThreadCount();
+                        while (tcount > 20) {
+                            MultiExtractor.class.wait();
+                            tcount = MultiExtractor.getThreadCount();
                         }
-                    } else {
-                        continue;
+                        MultiExtractor t = new MultiExtractor(url, obj.get("html").toString());
+                        t.start();
                     }
-                
+                } else {
+                    continue;
+                }
+
             }
-            proColl.insert(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
+            proColl.save(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
             cur.close();
             mongo.close();
             proMongo.close();
