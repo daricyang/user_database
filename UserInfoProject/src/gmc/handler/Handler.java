@@ -5,6 +5,7 @@
 package gmc.handler;
 
 import gmc.autologin.SinaWeiboAutoLogin;
+import gmc.autologin.TencentAutoLogin;
 import gmc.extractor.Extractor;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -29,5 +30,7 @@ public class Handler {
         swal.start();
         Extractor e=new Extractor();
         e.start();
+        TencentAutoLogin tal=new TencentAutoLogin();
+        tal.start();
     }
 }

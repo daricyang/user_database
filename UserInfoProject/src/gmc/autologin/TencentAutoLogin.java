@@ -4,16 +4,29 @@
  */
 package gmc.autologin;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBAddress;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import gmc.extractor.ReglarExpression;
-import gmc.pagecrawler.Crawler;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.script.ScriptException;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.http.HttpEntity;
@@ -24,12 +37,13 @@ import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 
 /**
  *
  * @author Pok
  */
-public class TencentAutoLogin {
+public class TencentAutoLogin extends Thread{
 
     private static String HEXSTRING = "0123456789ABCDEF";
 
@@ -152,4 +166,68 @@ public class TencentAutoLogin {
         String V = md5(U + verifycode.toUpperCase());
         return V;
     }
+    
+    public void pushCookie() throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException, FileNotFoundException, ScriptException, ScriptException, NoSuchMethodException, Exception {
+        DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+        while (true) {
+            db.requestStart();
+            DBCollection coll = db.getCollection("c_login_qqcookie");
+            DBObject queryObj = new BasicDBObject("status", "available");
+            DBObject updateObj = new BasicDBObject("$set", new BasicDBObject("status", "disable"));
+            coll.update(queryObj, updateObj, false, true);
+            DBCollection uidColl = db.getCollection("c_login_id");
+            DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
+            while (cur.hasNext()) {
+                DBObject obj = cur.next();
+                String cookie = login(obj.get("uid").toString(), obj.get("pwd").toString());
+                if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
+                    Date date = new Date();
+                    DBObject inObj = new BasicDBObject();
+                    inObj.put("cookie", cookie);
+                    inObj.put("date", date.toString());
+                    inObj.put("status", "available");
+                    coll.insert(inObj);
+                } else {
+                    continue;
+                }
+            }
+            cur.close();
+            db.requestDone();
+            Thread.sleep(1000 * 60 * 60 * 12);
+        }
+    }
+
+    @Override
+    public void run() {
+        super.run();
+        try {
+            pushCookie();
+        } catch (IOException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalBlockSizeException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (BadPaddingException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (InvalidKeySpecException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeyException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchPaddingException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ScriptException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchMethodException ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
 }

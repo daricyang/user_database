@@ -4,14 +4,14 @@
  */
 package gmc.extractor;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.MongoOptions;
 import gmc.config.Config;
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class MultiExtractor extends Thread {
     private String error = "";
     private String src;
     private String id;
-    private HashMap<String, String> info = new HashMap<String,String>();
+    private HashMap<String, String> info = new HashMap<String, String>();
     static final int MAXTHREADCOUNT = 200;
 
     static int getThreadCount() {
@@ -41,10 +41,10 @@ public class MultiExtractor extends Thread {
         }
     }
 
-    public MultiExtractor(String id,String src) {
+    public MultiExtractor(String id, String src) {
         super();
         this.src = src;
-        this.id=id;
+        this.id = id;
         synchronized (MultiExtractor.class) {
             threadCount++;
             for (int j = 0; j < threadName.length; j++) {
@@ -97,10 +97,9 @@ public class MultiExtractor extends Thread {
 
     private void save() throws UnknownHostException {
         if (!info.isEmpty()) {
-            Mongo mongo = new Mongo(Config.disHost);
-            DB db = mongo.getDB(Config.disMongoDBName);
-            DBCollection coll = db.getCollection(Config.disMongoCollectionName);
-            DBObject obj = new BasicDBObject("uid",id);
+            DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+            DBCollection coll = db.getCollection("c_weibo_userinfo");
+            DBObject obj = new BasicDBObject("uid", id);
             for (String key : info.keySet()) {
                 if (key.equals("标签")) {
                     String[] tag = info.get(key).trim().split(" ");
@@ -111,16 +110,13 @@ public class MultiExtractor extends Thread {
             }
             coll.insert(obj);
             info.clear();
-            mongo.close();
         }
         if (!error.isEmpty() || error != null || !error.equals("")) {
-            Mongo mongo = new Mongo(Config.errHost);
-            DB db = mongo.getDB(Config.errMongoDBName);
-            DBCollection coll = db.getCollection(Config.errMongoCollectionName);
+            DB db = Mongo.connect(new DBAddress("192.168.86.216", "peopel"));
+            DBCollection coll = db.getCollection("c_weibo_error");
             DBObject obj = new BasicDBObject("error", error).append("uid", id);
             coll.insert(obj);
             error = "";
-            mongo.close();
         }
     }
 }

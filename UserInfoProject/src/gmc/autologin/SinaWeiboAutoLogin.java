@@ -6,6 +6,7 @@ package gmc.autologin;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -53,7 +54,7 @@ import org.json.JSONObject;
  *
  * @author Pok
  */
-public class SinaWeiboAutoLogin extends Thread{
+public class SinaWeiboAutoLogin extends Thread {
 
     private String cookie;
     private String rsakv;
@@ -181,15 +182,14 @@ public class SinaWeiboAutoLogin extends Thread{
     }
 
     public void pushCookie() throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException {
-        Mongo m = new Mongo(Config.cookieHost);
-        DB db = m.getDB(Config.cookieDBName);
+        DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
         while (true) {
             db.requestStart();
-            DBCollection coll = db.getCollection(Config.cookieCollectionName);
+            DBCollection coll = db.getCollection("c_login_cookie");
             DBObject queryObj = new BasicDBObject("status", "available");
             DBObject updateObj = new BasicDBObject("$set", new BasicDBObject("status", "disable"));
             coll.update(queryObj, updateObj, false, true);
-            DBCollection uidColl = db.getCollection(Config.cookie_idCollectionName);
+            DBCollection uidColl = db.getCollection("c_login_id");
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             while (cur.hasNext()) {
                 DBObject obj = cur.next();
@@ -201,7 +201,7 @@ public class SinaWeiboAutoLogin extends Thread{
                     inObj.put("date", date.toString());
                     inObj.put("status", "available");
                     coll.insert(inObj);
-                }else{
+                } else {
                     continue;
                 }
             }
@@ -222,7 +222,7 @@ public class SinaWeiboAutoLogin extends Thread{
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalBlockSizeException ex) {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
-        }  catch (BadPaddingException ex) {
+        } catch (BadPaddingException ex) {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
@@ -232,10 +232,8 @@ public class SinaWeiboAutoLogin extends Thread{
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchPaddingException ex) {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
-        }catch (InterruptedException ex) {
+        } catch (InterruptedException ex) {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
 }

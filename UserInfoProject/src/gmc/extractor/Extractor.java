@@ -6,10 +6,12 @@ package gmc.extractor;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.MongoOptions;
 import gmc.config.Config;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
@@ -30,18 +32,13 @@ public class Extractor extends Thread {
 
     public void extractor() throws UnknownHostException, InterruptedException {
         int c = 0;
-        // Config.init();
+         Config.init();
         while (true) {
             double lastProcessTime = 0;
-            Mongo mongo = new Mongo(Config.sourceHost);
-            Mongo proMongo = mongo;
-            if (!Config.sourceHost.equals(Config.processHost)) {
-                proMongo = new Mongo(Config.processHost);
-            }
-            DB db = mongo.getDB(Config.sourceMongoDBName);
-            DB proDb = proMongo.getDB(Config.processDBName);
-            DBCollection coll = db.getCollection(Config.sourceMongoCollectionName);
-            DBCollection proColl = proDb.getCollection(Config.processCollectionName);
+            DB db = Mongo.connect(new DBAddress("192.168.86.216", "pagebase"));
+            DB proDb = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+            DBCollection coll = db.getCollection("weibo");
+            DBCollection proColl = proDb.getCollection("c_weibo_process");
             DBObject timeObj = proColl.findOne();
             //System.out.println(timeObj != null && timeObj.containsField("time"));
             if (timeObj != null && timeObj.containsField("time")) {
@@ -76,8 +73,6 @@ public class Extractor extends Thread {
             }
             proColl.save(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
             cur.close();
-            mongo.close();
-            proMongo.close();
             Thread.sleep(1000 * 60 * 10);
         }
 
