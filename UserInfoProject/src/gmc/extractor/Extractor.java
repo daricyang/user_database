@@ -38,8 +38,9 @@ public class Extractor extends Thread {
                 lastProcessTime = Double.parseDouble(timeObj.get("time").toString());
             }
             System.out.println("--\tRound:" + (++c) + "\tLast Process Time:" + lastProcessTime + "\t--");
-            DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", lastProcessTime));
+            DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", lastProcessTime)).append("url", new BasicDBObject("$regex", "info"));
             DBCursor cur = coll.find(queryObj);
+            cur.sort(new BasicDBObject("time", 1));
             while (cur.hasNext()) {
                 DBObject obj = cur.next();
                 double curTime = (Double) obj.get("time");
@@ -48,21 +49,16 @@ public class Extractor extends Thread {
                     proColl.save(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
                 }
                 String url = obj.get("url").toString();
-                if (url.indexOf("info") != -1) {
-                    url = url.substring(url.indexOf("com/") + 4, url.indexOf("/info"));
-                    synchronized (MultiExtractor.class) {
-                        int tcount = MultiExtractor.getThreadCount();
-                        while (tcount > 20) {
-                            MultiExtractor.class.wait();
-                            tcount = MultiExtractor.getThreadCount();
-                        }
-                        MultiExtractor t = new MultiExtractor(url, obj.get("html").toString());
-                        t.start();
+                url = url.substring(url.indexOf("com/") + 4, url.indexOf("/info"));
+                synchronized (MultiExtractor.class) {
+                    int tcount = MultiExtractor.getThreadCount();
+                    while (tcount > 20) {
+                        MultiExtractor.class.wait();
+                        tcount = MultiExtractor.getThreadCount();
                     }
-                } else {
-                    continue;
+                    MultiExtractor t = new MultiExtractor(url, obj.get("html").toString());
+                    t.start();
                 }
-
             }
             cur.close();
             db.getMongo().close();

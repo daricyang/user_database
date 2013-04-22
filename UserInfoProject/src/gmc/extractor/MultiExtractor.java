@@ -62,7 +62,7 @@ public class MultiExtractor extends Thread {
             extractInfo();
             save();
         } catch (Exception e) {
-            error += e.getMessage();
+            error += e.getLocalizedMessage();
         } finally {
             synchronized (MultiExtractor.class) {
                 threadCount--;
@@ -72,7 +72,7 @@ public class MultiExtractor extends Thread {
                 try {
                     Thread.sleep(100);
                 } catch (Exception e) {
-                    error += e.getMessage();
+                    error += e.getLocalizedMessage();
                 }
             }
         }
@@ -88,7 +88,7 @@ public class MultiExtractor extends Thread {
                 String[] temp = s.split(",");
                 info.put(temp[0], temp[1]);
             } catch (Exception ex) {
-                error += ex.getMessage();
+                error += ex.getLocalizedMessage();
             }
         }
     }
@@ -110,7 +110,7 @@ public class MultiExtractor extends Thread {
             info.clear();
             db.getMongo().close();
         }
-        if (!error.isEmpty() || error != null || !error.equals("")) {
+        if (!error.isEmpty() && error != null && !error.equals("")&&!error.equals("null")) {
             DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
             DBCollection coll = db.getCollection("c_weibo_error");
             DBObject obj = new BasicDBObject("error", error).append("uid", id);

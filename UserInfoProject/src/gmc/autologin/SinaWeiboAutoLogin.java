@@ -180,8 +180,8 @@ public class SinaWeiboAutoLogin extends Thread {
     }
 
     public void pushCookie() throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException {
-        DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
         while (true) {
+            DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
             db.requestStart();
             DBCollection coll = db.getCollection("c_login_cookie");
             DBObject queryObj = new BasicDBObject("status", "available");
@@ -190,10 +190,10 @@ public class SinaWeiboAutoLogin extends Thread {
             DBCollection uidColl = db.getCollection("c_login_id");
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             while (cur.hasNext()) {
-                Thread.sleep((long)(1000*10*Math.random()));
+                Thread.sleep((long) (1000 * 10 * Math.random()));
                 DBObject obj = cur.next();
                 String cookie = getLoginCookie(obj.get("uid").toString(), obj.get("pwd").toString());
-                Thread.sleep(1000*10);
+                Thread.sleep(1000 * 10);
                 if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
                     Date date = new Date();
                     DBObject inObj = new BasicDBObject();
@@ -237,6 +237,4 @@ public class SinaWeiboAutoLogin extends Thread {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-  
 }

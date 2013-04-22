@@ -43,7 +43,7 @@ import org.json.JSONException;
  *
  * @author Pok
  */
-public class TencentAutoLogin extends Thread{
+public class TencentAutoLogin extends Thread {
 
     private static String HEXSTRING = "0123456789ABCDEF";
 
@@ -59,7 +59,7 @@ public class TencentAutoLogin extends Thread{
     }
 
     private List<String> getParam(HttpClient client, String uid) throws IOException {
-        String url = "http://check.ptlogin2.qq.com/check?regmaster=&uin="+uid+"&appid=46000101&js_ver=10028&js_type=1&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1&u1=http%3A%2F%2Ft.qq.com&r=0.8935663888696581";
+        String url = "http://check.ptlogin2.qq.com/check?regmaster=&uin=" + uid + "&appid=46000101&js_ver=10028&js_type=1&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1&u1=http%3A%2F%2Ft.qq.com&r=0.8935663888696581";
         HttpGet get = new HttpGet(url);
         HttpResponse response = client.execute(get);
         HttpEntity entity = response.getEntity();
@@ -75,7 +75,7 @@ public class TencentAutoLogin extends Thread{
 
     private String getCookie(DefaultHttpClient client, String uid, String sp, String captcha) throws IOException {
         String cookie = "";
-        String url = "http://ptlogin2.qq.com/login?u="+uid+"&p="+sp+"&verifycode="+captcha+"&aid=46000101&u1=http%3A%2F%2Ft.qq.com&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&low_login_enable=1&low_login_hour=720&regmaster=&fp=loginerroralert&action=4-8-1366017177854&mibao_css=&t=0&g=1&js_ver=10028&js_type=1&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1";
+        String url = "http://ptlogin2.qq.com/login?u=" + uid + "&p=" + sp + "&verifycode=" + captcha + "&aid=46000101&u1=http%3A%2F%2Ft.qq.com&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&low_login_enable=1&low_login_hour=720&regmaster=&fp=loginerroralert&action=4-8-1366017177854&mibao_css=&t=0&g=1&js_ver=10028&js_type=1&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1";
         HttpGet get = new HttpGet(url);
         HttpResponse response = client.execute(get);
         HttpEntity entity = response.getEntity();
@@ -137,10 +137,10 @@ public class TencentAutoLogin extends Thread{
         String V = md5(U + verifycode.toUpperCase());
         return V;
     }
-    
+
     public void pushCookie() throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException, FileNotFoundException, ScriptException, ScriptException, NoSuchMethodException, Exception {
-        DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
         while (true) {
+            DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
             db.requestStart();
             DBCollection coll = db.getCollection("c_login_qqcookie");
             DBObject queryObj = new BasicDBObject("status", "available");
@@ -149,7 +149,7 @@ public class TencentAutoLogin extends Thread{
             DBCollection uidColl = db.getCollection("c_login_id");
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             while (cur.hasNext()) {
-                Thread.sleep((long)(1000*10*Math.random()));
+                Thread.sleep((long) (1000 * 10 * Math.random()));
                 DBObject obj = cur.next();
                 String cookie = login(obj.get("uid").toString(), obj.get("pwd").toString());
                 if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
@@ -185,7 +185,7 @@ public class TencentAutoLogin extends Thread{
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
-        }catch (InvalidKeySpecException ex) {
+        } catch (InvalidKeySpecException ex) {
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidKeyException ex) {
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
@@ -201,6 +201,4 @@ public class TencentAutoLogin extends Thread{
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
 }
