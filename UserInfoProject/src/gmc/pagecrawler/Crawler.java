@@ -4,6 +4,7 @@
  */
 package gmc.pagecrawler;
 
+import gmc.autologin.SinaWeiboAutoLogin;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,5 +66,14 @@ public class Crawler {
             sb.append(temp);
         }
         return sb.toString();
+    }
+
+    public static void main(String[] a) throws Exception {
+        SinaWeiboAutoLogin s = new SinaWeiboAutoLogin();
+        String cookie = s.getLoginCookie("gmcda2@sina.cn", "gmcgmc");
+        Crawler c = new Crawler("weibo.com", cookie, "utf-8");
+        while (true) {
+            c.crawler("http://weibo.com/u/3236369790?wvr=5&wvr=5&lf=reg");
+        }
     }
 }

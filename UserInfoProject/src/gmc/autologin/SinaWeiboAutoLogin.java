@@ -95,11 +95,12 @@ public class SinaWeiboAutoLogin extends Thread {
     }
 
     private void getParam(DefaultHttpClient client) throws IOException, JSONException {
-        String preloginurl = "http://login.sina.com.cn/sso/prelogin.php?entry=sso&"
-                + "callback=sinaSSOController.preloginCallBack&su="
-                + "dW5kZWZpbmVk"
-                + "&rsakt=mod&client=ssologin.js(v1.4.2)"
-                + "&_=" + getCurrentTime();
+        String preloginurl = "http://login.sina.com.cn/sso/prelogin.php?"
+                + "entry=sso&"
+                + "callback=sinaSSOController.preloginCallBack&su=dW5kZWZpbmVk&"
+                + "rsakt=mod&"
+                + "client=ssologin.js(v1.4.2)&"
+                + "_=" + getCurrentTime();
         HttpGet get = new HttpGet(preloginurl);
         HttpResponse response = client.execute(get);
         String getResp = EntityUtils.toString(response.getEntity());
@@ -164,6 +165,7 @@ public class SinaWeiboAutoLogin extends Thread {
         post.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
         HttpResponse response = client.execute(post);
         String entity = EntityUtils.toString(response.getEntity());
+        System.out.println(entity);
         String url = "";
         try {
             url = entity.substring(entity.indexOf("http://weibo.com/ajaxlogin.php?"), entity.indexOf("code=0") + 6);
@@ -188,8 +190,10 @@ public class SinaWeiboAutoLogin extends Thread {
             DBCollection uidColl = db.getCollection("c_login_id");
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             while (cur.hasNext()) {
+                Thread.sleep((long)(1000*10*Math.random()));
                 DBObject obj = cur.next();
                 String cookie = getLoginCookie(obj.get("uid").toString(), obj.get("pwd").toString());
+                Thread.sleep(1000*10);
                 if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
                     Date date = new Date();
                     DBObject inObj = new BasicDBObject();
@@ -233,4 +237,6 @@ public class SinaWeiboAutoLogin extends Thread {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+  
 }

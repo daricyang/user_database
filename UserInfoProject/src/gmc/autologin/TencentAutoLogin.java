@@ -59,15 +59,7 @@ public class TencentAutoLogin extends Thread{
     }
 
     private List<String> getParam(HttpClient client, String uid) throws IOException {
-        String url = "http://check.ptlogin2.qq.com/check"
-                + "?regmaster="
-                + "&uin="+uid
-                + "&appid=46000101"
-                + "&js_ver=10028"
-                + "&js_type=1"
-                + "&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1"
-                + "&u1=http%3A%2F%2Ft.qq.com"
-                + "&r=0.46759508829563856";
+        String url = "http://check.ptlogin2.qq.com/check?regmaster=&uin="+uid+"&appid=46000101&js_ver=10028&js_type=1&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1&u1=http%3A%2F%2Ft.qq.com&r=0.8935663888696581";
         HttpGet get = new HttpGet(url);
         HttpResponse response = client.execute(get);
         HttpEntity entity = response.getEntity();
@@ -83,28 +75,7 @@ public class TencentAutoLogin extends Thread{
 
     private String getCookie(DefaultHttpClient client, String uid, String sp, String captcha) throws IOException {
         String cookie = "";
-        String url =" http://ptlogin2.qq.com/login"
-                + "?u="+uid
-                + "&p="+sp
-                + "&verifycode="+captcha
-                + "&aid=46000101"
-                + "&u1=http%3A%2F%2Ft.qq.com"
-                + "&h=1"
-                + "&ptredirect=1"
-                + "&ptlang=2052"
-                + "&from_ui=1"
-                + "&dumy="
-                + "&low_login_enable=1"
-                + "&low_login_hour=720"
-                + "&regmaster="
-                + "&fp=loginerroralert"
-                + "&action=1-4-1366001797391"
-                + "&mibao_css="
-                + "&t=1"
-                + "&g=1"
-                + "&js_ver=10028"
-                + "&js_type=1"
-                + "&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1";
+        String url = "http://ptlogin2.qq.com/login?u="+uid+"&p="+sp+"&verifycode="+captcha+"&aid=46000101&u1=http%3A%2F%2Ft.qq.com&h=1&ptredirect=1&ptlang=2052&from_ui=1&dumy=&low_login_enable=1&low_login_hour=720&regmaster=&fp=loginerroralert&action=4-8-1366017177854&mibao_css=&t=0&g=1&js_ver=10028&js_type=1&login_sig=6sRjjkCeKE0J6NkXMXzD*oLgBDzHzCEGBMElHK*6vLunLhvvc9*9hOlIWWy*nTD1";
         HttpGet get = new HttpGet(url);
         HttpResponse response = client.execute(get);
         HttpEntity entity = response.getEntity();
@@ -178,6 +149,7 @@ public class TencentAutoLogin extends Thread{
             DBCollection uidColl = db.getCollection("c_login_id");
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             while (cur.hasNext()) {
+                Thread.sleep((long)(1000*10*Math.random()));
                 DBObject obj = cur.next();
                 String cookie = login(obj.get("uid").toString(), obj.get("pwd").toString());
                 if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
