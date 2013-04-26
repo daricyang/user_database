@@ -81,10 +81,14 @@ public class TencentAutoLogin extends Thread {
         HttpEntity entity = response.getEntity();
         String entityStr = EntityUtils.toString(entity);
         System.out.println(entityStr);
-        for (Cookie c : client.getCookieStore().getCookies()) {
-            String key = c.getName();
-            String value = c.getValue();
-            cookie += key + "=" + value + ";";
+        if (entityStr.indexOf("登录成功") > -1) {
+            for (Cookie c : client.getCookieStore().getCookies()) {
+                String key = c.getName();
+                String value = c.getValue();
+                cookie += key + "=" + value + ";";
+            }
+        }else{
+            cookie="-1";
         }
         return cookie;
     }
@@ -146,13 +150,13 @@ public class TencentAutoLogin extends Thread {
             DBObject queryObj = new BasicDBObject("status", "available");
             DBObject updateObj = new BasicDBObject("$set", new BasicDBObject("status", "disable"));
             coll.update(queryObj, updateObj, false, true);
-            DBCollection uidColl = db.getCollection("c_login_id");
+            DBCollection uidColl = db.getCollection("c_login_qqid");
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             while (cur.hasNext()) {
                 Thread.sleep((long) (1000 * 10 * Math.random()));
                 DBObject obj = cur.next();
                 String cookie = login(obj.get("uid").toString(), obj.get("pwd").toString());
-                if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
+                if (!cookie.isEmpty() && cookie != null && !cookie.equals("-1")) {
                     Date date = new Date();
                     DBObject inObj = new BasicDBObject();
                     inObj.put("cookie", cookie);
@@ -201,4 +205,5 @@ public class TencentAutoLogin extends Thread {
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
 }

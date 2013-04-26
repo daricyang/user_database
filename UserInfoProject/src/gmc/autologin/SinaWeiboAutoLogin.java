@@ -165,7 +165,6 @@ public class SinaWeiboAutoLogin extends Thread {
         post.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
         HttpResponse response = client.execute(post);
         String entity = EntityUtils.toString(response.getEntity());
-        System.out.println(entity);
         String url = "";
         try {
             url = entity.substring(entity.indexOf("http://weibo.com/ajaxlogin.php?"), entity.indexOf("code=0") + 6);
@@ -236,5 +235,10 @@ public class SinaWeiboAutoLogin extends Thread {
         } catch (InterruptedException ex) {
             Logger.getLogger(SinaWeiboAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static void main(String[] a) throws Exception{
+        SinaWeiboAutoLogin s=new SinaWeiboAutoLogin();
+        s.getLoginCookie("gmcda3@sina.cn", "gmcgmc");
     }
 }
