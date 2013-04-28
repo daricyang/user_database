@@ -182,7 +182,6 @@ public class TencentAutoLogin extends Thread {
                 db.requestDone();
                 db.getMongo().close();
                 Thread.sleep((long)(1000 * 60 * Math.random()));
-                continue;
             }
         }
     }
