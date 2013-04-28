@@ -20,6 +20,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -87,8 +88,8 @@ public class TencentAutoLogin extends Thread {
                 String value = c.getValue();
                 cookie += key + "=" + value + ";";
             }
-        }else{
-            cookie="-1";
+        } else {
+            cookie = "-1";
         }
         return cookie;
     }
@@ -147,11 +148,9 @@ public class TencentAutoLogin extends Thread {
             DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
             db.requestStart();
             DBCollection coll = db.getCollection("c_login_qqcookie");
-            DBObject queryObj = new BasicDBObject("status", "available");
-            DBObject updateObj = new BasicDBObject("$set", new BasicDBObject("status", "disable"));
-            coll.update(queryObj, updateObj, false, true);
             DBCollection uidColl = db.getCollection("c_login_qqid");
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
+            ArrayList<DBObject> loginList = new ArrayList<DBObject>();
             while (cur.hasNext()) {
                 Thread.sleep((long) (1000 * 10 * Math.random()));
                 DBObject obj = cur.next();
@@ -162,15 +161,29 @@ public class TencentAutoLogin extends Thread {
                     inObj.put("cookie", cookie);
                     inObj.put("date", date.toString());
                     inObj.put("status", "available");
-                    coll.insert(inObj);
+                    loginList.add(inObj);
                 } else {
                     continue;
                 }
             }
-            cur.close();
-            db.requestDone();
-            db.getMongo().close();
-            Thread.sleep(1000 * 60 * 60 * 12);
+            if (loginList.size() > 0) {
+                DBObject queryObj = new BasicDBObject("status", "available");
+                DBObject updateObj = new BasicDBObject("$set", new BasicDBObject("status", "disable"));
+                coll.update(queryObj, updateObj, false, true);
+                for (DBObject o : loginList) {
+                    coll.insert(o);
+                }
+                cur.close();
+                db.requestDone();
+                db.getMongo().close();
+                Thread.sleep(1000 * 60 * 60 * 12);
+            } else {
+                cur.close();
+                db.requestDone();
+                db.getMongo().close();
+                Thread.sleep((long)(1000 * 60 * Math.random()));
+                continue;
+            }
         }
     }
 
@@ -205,5 +218,4 @@ public class TencentAutoLogin extends Thread {
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }
