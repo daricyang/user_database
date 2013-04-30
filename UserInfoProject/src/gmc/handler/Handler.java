@@ -28,9 +28,9 @@ public class Handler {
             InterruptedException{
         SinaWeiboAutoLogin swal=new SinaWeiboAutoLogin();
         swal.start();
-        Extractor e=new Extractor();
-        e.start();
-        TencentAutoLogin tal=new TencentAutoLogin();
-        tal.start();
+//        Extractor e=new Extractor();
+//        e.start();
+//        TencentAutoLogin tal=new TencentAutoLogin();
+//        tal.start();
     }
 }

@@ -178,7 +178,7 @@ public class SinaWeiboAutoLogin extends Thread {
 
     public void pushCookie() throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException {
         while (true) {
-            DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+            DB db = Mongo.connect(new DBAddress("192.168.235.2", "people"));
             db.requestStart();
             DBCollection coll = db.getCollection("c_login_cookie");
             DBCollection uidColl = db.getCollection("c_login_id");
