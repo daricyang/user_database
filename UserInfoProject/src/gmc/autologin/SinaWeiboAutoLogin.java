@@ -211,11 +211,13 @@ public class SinaWeiboAutoLogin extends Thread {
                 cur.close();
                 db.requestDone();
                 db.getMongo().close();
+                System.out.println(Class.class.getName()+"\tstart sleeping...");
                 Thread.sleep(1000 * 60 * 60 * 12);
             } else {
                 cur.close();
                 db.requestDone();
                 db.getMongo().close();
+                System.out.println(this.getClass().getName()+"\tcatch exception:run again after 1 min");
                 Thread.sleep((long)(1000 * 60 * Math.random()));
             }
         }
