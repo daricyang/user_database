@@ -28,8 +28,8 @@ public class Extractor extends Thread {
         Config.init();
         while (true) {
             double lastProcessTime = 0;
-            DB db = Mongo.connect(new DBAddress("192.168.86.216", "pagebase"));
-            DB proDb = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+            DB db = Mongo.connect(new DBAddress("192.168.235.2", "pagebase"));
+            DB proDb = Mongo.connect(new DBAddress("192.168.235.2", "people"));
             DBCollection coll = db.getCollection("weibo");
             DBCollection proColl = proDb.getCollection("c_weibo_process");
             DBObject timeObj = proColl.findOne();

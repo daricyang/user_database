@@ -95,7 +95,7 @@ public class MultiExtractor extends Thread {
 
     private void save() throws UnknownHostException {
         if (!info.isEmpty()) {
-            DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+            DB db = Mongo.connect(new DBAddress("192.168.235.2", "people"));
             DBCollection coll = db.getCollection("c_weibo_userinfo");
             DBObject obj = new BasicDBObject("uid", id);
             for (String key : info.keySet()) {
