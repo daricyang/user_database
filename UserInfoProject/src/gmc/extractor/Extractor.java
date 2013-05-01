@@ -40,7 +40,6 @@ public class Extractor extends Thread {
             System.out.println("--\tRound:" + (++c) + "\tLast Process Time:" + lastProcessTime + "\t--");
             DBObject queryObj = new BasicDBObject().append("time", new BasicDBObject().append("$gt", lastProcessTime)).append("url", new BasicDBObject("$regex", "info"));
             DBCursor cur = coll.find(queryObj);
-            cur.sort(new BasicDBObject("time", 1));
             while (cur.hasNext()) {
                 DBObject obj = cur.next();
                 double curTime = (Double) obj.get("time");
