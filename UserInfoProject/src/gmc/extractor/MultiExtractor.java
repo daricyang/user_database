@@ -111,7 +111,7 @@ public class MultiExtractor extends Thread {
             db.getMongo().close();
         }
         if (!error.isEmpty() && error != null && !error.equals("")&&!error.equals("null")) {
-            DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+            DB db = Mongo.connect(new DBAddress("192.168.235.2", "people"));
             DBCollection coll = db.getCollection("c_weibo_error");
             DBObject obj = new BasicDBObject("error", error).append("uid", id);
             coll.insert(obj);
