@@ -21,7 +21,7 @@ public class Config {
 
     public static void init() throws UnknownHostException {
         System.out.println("--\tinitial process!\t--");
-        DB db = Mongo.connect(new DBAddress("192.168.86.216", "people"));
+        DB db = Mongo.connect(new DBAddress("192.168.235.2", "people"));
         DBCollection coll = db.getCollection("c_weibo_process");
         if (!coll.isCapped()) {
             coll.drop();
