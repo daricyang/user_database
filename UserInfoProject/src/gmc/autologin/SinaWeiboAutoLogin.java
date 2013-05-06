@@ -11,6 +11,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import gmc.config.Config;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -60,7 +61,16 @@ public class SinaWeiboAutoLogin extends Thread {
     private int retcode;
     private String sp;
     private String su;
+    private Config conf;
 
+    public SinaWeiboAutoLogin(Config conf) {
+        this.conf = conf;
+    }
+    
+
+    
+    
+    
     /**
      * 使用HttpClient4实现自动微博登陆
      *
@@ -178,17 +188,16 @@ public class SinaWeiboAutoLogin extends Thread {
 
     public void pushCookie() throws IOException, JSONException, IllegalBlockSizeException, IllegalBlockSizeException, IllegalBlockSizeException, BadPaddingException, BadPaddingException, BadPaddingException, NoSuchAlgorithmException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, NoSuchPaddingException, InterruptedException {
         while (true) {
-            DB db = Mongo.connect(new DBAddress("192.168.235.2", "people"));
+            DB db = Mongo.connect(new DBAddress(conf.getCookieHost(), conf.getCookieDBName()));
             db.requestStart();
-            DBCollection coll = db.getCollection("c_login_cookie");
-            DBCollection uidColl = db.getCollection("c_login_id");
+            DBCollection coll = db.getCollection(conf.getCookieCollectionName());
+            DBCollection uidColl = db.getCollection(conf.getCookie_idCollectionName());
             DBCursor cur = uidColl.find(new BasicDBObject("status", "available"));
             ArrayList<DBObject> loginList=new ArrayList<DBObject>();
             while (cur.hasNext()) {
                 Thread.sleep((long) (1000 * 10 * Math.random()));
                 DBObject obj = cur.next();
-                SinaWeiboAutoLogin sina=new SinaWeiboAutoLogin();
-                String cookie = sina.getLoginCookie(obj.get("uid").toString(), obj.get("pwd").toString());
+                String cookie = getLoginCookie(obj.get("uid").toString(), obj.get("pwd").toString());
                 Thread.sleep(1000 * 10);
                 if (!cookie.isEmpty() && cookie != null && !cookie.equals("")) {
                     Date date = new Date();
@@ -249,10 +258,5 @@ public class SinaWeiboAutoLogin extends Thread {
         }
     }
     
-    public static void main(String[] a) throws Exception{
-        SinaWeiboAutoLogin s=new SinaWeiboAutoLogin();
-        System.out.println(s.getLoginCookie("gmcda3@sina.cn", "gmcgmc"));
-        System.out.println(s.getLoginCookie("gmcda2@sina.cn", "gmcgmc"));
-        System.out.println(s.getLoginCookie("gmcda5@sina.cn", "gmcgmc"));
-    }
+    
 }

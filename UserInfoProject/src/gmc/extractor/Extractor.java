@@ -28,21 +28,9 @@ public class Extractor extends Thread {
     public static final int SINA = 1;
     public static final int TENCENT = 2;
 
-    public Extractor(int type) {
-        this.type = type;
-        if (type == Extractor.SINA) {
-            conf = new Config.Builder(type, "192.168.86.216", "pagebase", "weibo", "192.168.86.216", "people", "c_weibo_userinfo")
-                    .configServer("192.168.86.216")
-                    .configErr("192.168.86.216", "people", "c_weibo_error")
-                    .configProcess("192.168.86.216", "people", "c_weibo_process")
-                    .build();
-        } else if (type == Extractor.TENCENT) {
-            conf = new Config.Builder(type, "192.168.86.216", "pagebase", "tencent", "192.168.86.216", "people", "c_tencent_userinfo")
-                    .configServer("192.168.86.216")
-                    .configErr("192.168.86.216", "people", "c_tencent_error")
-                    .configProcess("192.168.86.216", "people", "c_tencent_process")
-                    .build();
-        }
+    public Extractor(Config conf) {
+        this.conf=conf;
+        this.type = conf.getType();
     }
 
     public void extractor() throws UnknownHostException, InterruptedException {
@@ -105,8 +93,5 @@ public class Extractor extends Thread {
         }
     }
 
-    public static void main(String[] a) throws UnknownHostException, InterruptedException {
-        Extractor e = new Extractor(Extractor.SINA);
-        e.extractor();
-    }
+    
 }
