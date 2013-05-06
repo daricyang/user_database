@@ -23,15 +23,37 @@ import java.util.logging.Logger;
  */
 public class Extractor extends Thread {
 
+    private int type;
+    private Config conf;
+    public static final int SINA = 1;
+    public static final int TENCENT = 2;
+
+    public Extractor(int type) {
+        this.type = type;
+        if (type == Extractor.SINA) {
+            conf = new Config.Builder(type, "192.168.86.216", "pagebase", "weibo", "192.168.86.216", "people", "c_weibo_userinfo")
+                    .configServer("192.168.86.216")
+                    .configErr("192.168.86.216", "people", "c_weibo_error")
+                    .configProcess("192.168.86.216", "people", "c_weibo_peocess")
+                    .build();
+        } else if (type == Extractor.TENCENT) {
+            conf = new Config.Builder(type, "192.168.86.216", "pagebase", "tencent", "192.168.86.216", "people", "c_tencent_userinfo")
+                    .configServer("192.168.86.216")
+                    .configErr("192.168.86.216", "people", "c_tencent_error")
+                    .configProcess("192.168.86.216", "people", "c_tencent_peocess")
+                    .build();
+        }
+    }
+
     public void extractor() throws UnknownHostException, InterruptedException {
         int c = 0;
-        Config.init();
+        conf.init();
         while (true) {
             double lastProcessTime = 0;
-            DB db = Mongo.connect(new DBAddress("192.168.235.2", "pagebase"));
-            DB proDb = Mongo.connect(new DBAddress("192.168.235.2", "people"));
-            DBCollection coll = db.getCollection("weibo");
-            DBCollection proColl = proDb.getCollection("c_weibo_process");
+            DB db = Mongo.connect(new DBAddress(conf.getSourceHost(), conf.getSourceMongoDBName()));
+            DB proDb = Mongo.connect(new DBAddress(conf.getProcessHost(), conf.getProcessDBName()));
+            DBCollection coll = db.getCollection(conf.getSourceMongoCollectionName());
+            DBCollection proColl = proDb.getCollection(conf.getProcessCollectionName());
             DBObject timeObj = proColl.findOne();
             //System.out.println(timeObj != null && timeObj.containsField("time"));
             if (timeObj != null && timeObj.containsField("time")) {
@@ -48,14 +70,18 @@ public class Extractor extends Thread {
                     proColl.save(new BasicDBObject().append("date", new Date().getTime()).append("time", lastProcessTime));
                 }
                 String url = obj.get("url").toString();
-                url = url.substring(url.indexOf("com/") + 4, url.indexOf("/info"));
+                if (type == Extractor.SINA) {
+                    url = url.substring(url.indexOf("com/") + 4, url.indexOf("/info"));
+                }else if(type== Extractor.TENCENT){
+                    url=url.substring(url.indexOf("u=")+2);
+                }
                 synchronized (MultiExtractor.class) {
                     int tcount = MultiExtractor.getThreadCount();
                     while (tcount > 20) {
                         MultiExtractor.class.wait();
                         tcount = MultiExtractor.getThreadCount();
                     }
-                    MultiExtractor t = new MultiExtractor(url, obj.get("html").toString());
+                    MultiExtractor t = new MultiExtractor(conf, url, obj.get("html").toString());
                     t.start();
                 }
             }
@@ -80,7 +106,7 @@ public class Extractor extends Thread {
     }
 
     public static void main(String[] a) throws UnknownHostException, InterruptedException {
-        Extractor e = new Extractor();
+        Extractor e = new Extractor(Extractor.SINA);
         e.extractor();
     }
 }

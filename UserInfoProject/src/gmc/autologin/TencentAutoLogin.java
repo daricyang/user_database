@@ -219,6 +219,6 @@ public class TencentAutoLogin extends Thread {
     }
     public static void main(String[] a) throws Exception{
         TencentAutoLogin t=new TencentAutoLogin();
-        t.login("823247241", "b1234567890");
+        t.login("404931305", "daric911007");
     }
 }
