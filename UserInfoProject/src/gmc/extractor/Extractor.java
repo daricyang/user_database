@@ -34,13 +34,13 @@ public class Extractor extends Thread {
             conf = new Config.Builder(type, "192.168.86.216", "pagebase", "weibo", "192.168.86.216", "people", "c_weibo_userinfo")
                     .configServer("192.168.86.216")
                     .configErr("192.168.86.216", "people", "c_weibo_error")
-                    .configProcess("192.168.86.216", "people", "c_weibo_peocess")
+                    .configProcess("192.168.86.216", "people", "c_weibo_process")
                     .build();
         } else if (type == Extractor.TENCENT) {
             conf = new Config.Builder(type, "192.168.86.216", "pagebase", "tencent", "192.168.86.216", "people", "c_tencent_userinfo")
                     .configServer("192.168.86.216")
                     .configErr("192.168.86.216", "people", "c_tencent_error")
-                    .configProcess("192.168.86.216", "people", "c_tencent_peocess")
+                    .configProcess("192.168.86.216", "people", "c_tencent_process")
                     .build();
         }
     }
