@@ -68,6 +68,12 @@ public class Config {
             this.disMongoDBName = disDBName;
             this.disMongoCollectionName = disCollName;
         }
+        
+        public Builder(String disHost, String disDBName, String disCollName){
+            this.disHost = disHost;
+            this.disMongoDBName = disDBName;
+            this.disMongoCollectionName = disCollName;
+        }
 
         public Builder configCookie(String cookieHost, String cookieDBName, String cookie_idCollName, String cookieCollName) {
             this.cookieHost = cookieHost;
