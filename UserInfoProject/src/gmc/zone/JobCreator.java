@@ -4,6 +4,13 @@
  */
 package gmc.zone;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBAddress;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import redis.clients.jedis.Jedis;
@@ -14,7 +21,7 @@ import redis.clients.jedis.Jedis;
  */
 public class JobCreator {
 
-    private Jedis jedis;
+    private DBCollection coll;
     private static ArrayList<String> jobBatcher = new ArrayList<String>();
     private static Date date;
 
@@ -25,9 +32,10 @@ public class JobCreator {
         jc.shutdown();
     }
 
-    private void setup() {
-        jedis = new Jedis("127.0.0.1");
-        
+    private void setup() throws UnknownHostException {
+        DB db = Mongo.connect(new DBAddress("127.0.0.1", "Crawler"));
+        coll = db.getCollection("Crawler");
+
     }
 
     private void craeteRamdonQQ() throws Exception {
@@ -123,11 +131,11 @@ public class JobCreator {
             if (urls.length() > 0) {
                 urls = urls.substring(0, urls.length() - 1);
                 String job = "{\"handler\":\"zone\",\"urls\":[" + urls + "]}";
-                batch(job,false);
+                batch(job, false);
             }
 
         }
-        batch(null,true);
+        batch(null, true);
     }
 
     private void debugger() throws InterruptedException {
@@ -148,20 +156,9 @@ public class JobCreator {
             String s = job;
             jobBatcher.add(s);
         }
-        if(jedis.llen("zone")>100000){
-            while(jedis.llen("zone")>10000){
-                Thread.sleep(1000*10);
-            }
-        }
-        if (flush&&jobBatcher.size()>0) {
-            for (String jobEle : jobBatcher) {
-                jedis.rpush("zone", jobEle);
-            }
-            jobBatcher.clear();
-        } else if (jobBatcher.size() > 100) {
-            for (String jobEle : jobBatcher) {
-                jedis.rpush("zone", jobEle);
-            }
+        if (jobBatcher.size() > 100) {
+            DBObject obj=new BasicDBObject("jobs", jobBatcher.toString());
+            coll.save(obj);
             jobBatcher.clear();
         }
     }
