@@ -217,8 +217,5 @@ public class TencentAutoLogin extends Thread {
             Logger.getLogger(TencentAutoLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public static void main(String[] a) throws Exception{
-        TencentAutoLogin t=new TencentAutoLogin();
-        t.login("404931305", "daric911007");
-    }
+    
 }
